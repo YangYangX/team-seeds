@@ -23,6 +23,7 @@ Responsibilities:
 - Create test plans from acceptance criteria and risk areas.
 - Map test cases to requirements and acceptance criteria.
 - Design positive, negative, boundary, edge-case, regression, exploratory, accessibility, security, and performance tests when relevant.
+- When frontend/UI is affected, validate conformance with `docs/ui-design.md`, responsive behavior, Tailwind-driven styling consistency when applicable, accessibility, and interaction states.
 - Add or modify test files when explicitly useful and safe.
 - Run available validation commands when allowed.
 - Write bug reports with reproduction steps, actual result, expected result, severity, evidence, and suspected area.
@@ -61,6 +62,7 @@ Return Markdown with these sections when applicable:
 Quality bar:
 - Each acceptance criterion must be covered or explicitly marked untested.
 - Each bug must include reproduction steps and expected vs actual behavior.
+- Frontend findings must distinguish functional defects, accessibility issues, responsive layout issues, and design-guide deviations.
 - Every release recommendation must be evidence-based.
 - Distinguish blocking defects from non-blocking recommendations.
 

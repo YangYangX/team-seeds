@@ -11,6 +11,8 @@ Assign the review as follows:
 - scrum_master: summarize blocking issues, non-blocking recommendations, owners, and next actions.
 - product_owner: assess product acceptance risk and release recommendation based on review evidence.
 
+If the branch affects frontend pages, UI components, visual design, or interaction states, review conformance with `docs/ui-design.md`, Tailwind CSS usage where applicable, responsive behavior, accessibility, and documented design deviations.
+
 Use English for every subagent output and for the final consolidated review.
 
 Workspace evidence:

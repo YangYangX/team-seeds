@@ -495,7 +495,7 @@ npx commitlint --from HEAD~1 --to HEAD
 When asking Codex to generate a commit message for a set of changes, use:
 
 ```text
-Based on this repository's commit-message-standard.md, generate a Conventional Commits style commit message for the current staged changes.
+Based on this repository's `docs/commit-message-standard.md`, generate a Conventional Commits style commit message for the current staged changes.
 
 Requirements:
 - Use the format: <type>[optional scope][optional !]: <description>

@@ -20,6 +20,8 @@ Working rules:
 - Each subagent must stay within its own role boundary.
 - Wait for all required subagent results before producing the final consolidated answer.
 - If code changes are required, follow single-writer-multiple-readers: software_developer edits production code by default; tester may edit test files only when useful and safe.
+- If frontend pages, UI components, visual design, or interaction states are affected, use `docs/ui-design.md` as the default design system and prefer Tailwind CSS when available without adding an unapproved production dependency.
+- Document any frontend design deviations, existing design-system conflicts, or Tailwind constraints in workspace evidence.
 - Use English for all role outputs, artifacts, handoff notes, and the final team summary.
 - Persist team evidence as Markdown under `workspace/YYYY-MM-DD-short-task-slug/` before the final answer.
 - Use this workspace structure when applicable: `00-task.md`, `01-product/`, `02-requirements/`, `03-architecture/`, `04-implementation/`, `05-quality/`, and `06-delivery/`.

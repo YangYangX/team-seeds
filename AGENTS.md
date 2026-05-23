@@ -46,6 +46,19 @@ This repository uses a Codex subagent team with these project-scoped custom agen
 - Never store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
 - The final consolidated team answer must include an artifact index with file paths, owners, and status.
 
+## Frontend design rules
+
+- When a task affects frontend pages, UI components, visual design, or user-facing interaction states, use `docs/ui-design.md` as the default design system and visual style guide.
+- Prefer Tailwind CSS for frontend styling when the target project already uses Tailwind or can use it without adding an unapproved production dependency.
+- If the target project has an existing design system, reconcile it with `docs/ui-design.md` and state any conflicts or necessary deviations before implementation.
+- Frontend implementation should preserve the design guide's restrained editorial layout, typography, color palette, component treatments, responsive behavior, and accessibility expectations.
+- Design deviations must be documented in workspace evidence with the owner, reason, and affected files or components.
+
+## Commit message rules
+
+- When creating or recommending commits, use the Conventional Commits standard in `docs/commit-message-standard.md`.
+- If a change contains multiple unrelated intentions, recommend splitting it before committing.
+
 ## Definition of Done
 
 A work item is done only when:

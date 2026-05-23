@@ -233,6 +233,14 @@
                 "workspace_directory": {
                     "$ref": "#/$defs/filePath",
                     "description": "Root workspace directory for local, untracked team evidence artifacts."
+                },
+                "ui_design_guide_file": {
+                    "$ref": "#/$defs/filePath",
+                    "description": "Default frontend UI design guide used when tasks affect user-facing pages or components."
+                },
+                "human_guide_directory": {
+                    "$ref": "#/$defs/filePath",
+                    "description": "Directory for human-facing setup and usage guides that are not runtime requirements for agents."
                 }
             },
             "additionalProperties": false
@@ -1036,8 +1044,10 @@
                 "project_guidance_file": "AGENTS.md",
                 "workflow_prompt_directory": ".codex/team-prompts",
                 "team_schema_file": "schema.json",
-                "commit_message_standard_file": "commit-message-standard.md",
-                "workspace_directory": "workspace"
+                "commit_message_standard_file": "docs/commit-message-standard.md",
+                "workspace_directory": "workspace",
+                "ui_design_guide_file": "docs/ui-design.md",
+                "human_guide_directory": "guides"
             },
             "codex_config": {
                 "agents": {
@@ -1424,7 +1434,7 @@
             "standards": {
                 "commit_message": {
                     "standard": "conventional-commits-1.0.0",
-                    "file": "commit-message-standard.md",
+                    "file": "docs/commit-message-standard.md",
                     "enforced_by_agents": [
                         "software_developer",
                         "tester",

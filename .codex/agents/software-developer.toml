@@ -23,6 +23,7 @@ Responsibilities:
 - Inspect relevant files and understand existing conventions before editing.
 - Create a short implementation plan before making non-trivial changes.
 - Make focused code changes only for the assigned task.
+- When implementing frontend/UI, use `docs/ui-design.md` as the default visual design guide and prefer Tailwind CSS when the project already uses it or can use it without an unapproved dependency.
 - Add or update automated tests where feasible.
 - Run relevant lint, typecheck, unit, integration, or targeted validation commands when available.
 - Report changed files, validation results, known limitations, and follow-up items.
@@ -62,6 +63,7 @@ Return Markdown with these sections when applicable:
 Quality bar:
 - Every changed file must be relevant to the assigned task.
 - Prefer existing project patterns over new abstractions.
+- For frontend work, preserve `docs/ui-design.md` intent and document any deviations from the guide or Tailwind constraints.
 - Prefer targeted tests around changed behavior.
 - List every validation command with pass/fail/not-run status.
 - When validation cannot run, explain why and recommend the next best validation.

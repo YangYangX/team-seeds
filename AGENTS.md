@@ -20,7 +20,18 @@ This repository uses a Codex subagent team with these project-scoped custom agen
 
 ## Team workflow rules
 
-- Use subagents only when the user explicitly asks for a team/subagent workflow, or when the user asks to use one of the named roles.
+- Default team router mode is enabled for this project. Treat subsequent user messages in the same session as requests to a software team unless the user explicitly asks for direct-only assistance.
+- For non-trivial product, requirement, bug, implementation, review, release, or production-readiness requests, the parent agent should route work to the smallest relevant set of subagents automatically. The user should not need to paste workflow prompts repeatedly after the session is operating in team mode.
+- For trivial questions, direct shell-command requests, small clarifications, or narrow documentation edits, answer directly unless a role agent is clearly useful.
+- Do not spawn every agent by default. Choose roles by task type, risk, and expected evidence:
+  - Product ideas, scope, priorities, or acceptance intent: `product_owner`, often with `business_analyst`.
+  - Requirements, workflows, business rules, edge cases, or ambiguity: `business_analyst`, with `product_owner` for scope decisions.
+  - Architecture, integrations, public APIs, data flows, security, performance, or broad technical tradeoffs: `team_architect`.
+  - Code changes, refactors, bug fixes, or implementation planning: `software_developer`, with `tester` for validation.
+  - Bug reports: `business_analyst` for expected behavior, `software_developer` for diagnosis/fix, `tester` for reproduction and regression evidence, and `team_architect` when the impact is cross-cutting.
+  - PR/code review: use the review workflow roles needed for the changed surface.
+  - Release, production-readiness, deployment planning, or operational risk: `tester`, `scrum_master`, `team_architect`, and `product_owner` when acceptance or release risk is involved.
+- The parent agent remains the user-facing coordinator. Final answers should be unified and attributed to the responsible role only when helpful; do not expose raw subagent transcripts.
 - Use `single-writer-multiple-readers` for implementation work:
   - `software_developer` is the default writer for production code.
   - `tester` may write or modify test files when useful.
@@ -54,10 +65,28 @@ This repository uses a Codex subagent team with these project-scoped custom agen
   - `04-implementation/`
   - `05-quality/`
   - `06-delivery/`
+  - `07-service-manual/`
 - Each evidence file must include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary.
 - Agents with write access may write only their own evidence files. Read-only agents must return evidence to the parent or synthesis agent, which persists it without changing the role's decisions.
 - Never store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
 - The final consolidated team answer must include an artifact index with file paths, owners, and status.
+
+## Service manual rules
+
+- For product, feature, implementation, production-readiness, or release-support workflows, maintain a service manual draft at `workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md`.
+- The service manual is a synthesized document for the whole service, not a raw transcript or a stitched set of role reports. Each agent contributes only the content owned by its role, then the parent or synthesis agent edits everything into one coherent Markdown manual.
+- Role ownership governs source responsibility, not final document structure. Organize the final manual around how the service works, how users use it, how developers change it, how operators run it, and how the release is validated.
+- The final manual must use one editorial voice, consistent terminology, consistent heading style, and a smooth reading order. Remove duplicated content, role-status chatter, handoff noise, and contradictions; unresolved contradictions must become explicit open decisions with owners.
+- Default section ownership:
+  - `product_owner`: service purpose, target users, product scope, value proposition, release intent, and product risks.
+  - `business_analyst`: user workflows, business rules, glossary, edge cases, and acceptance behavior.
+  - `team_architect`: system overview, architecture, components, integrations, data flows, non-functional requirements, and operational constraints.
+  - `software_developer`: implementation notes, important modules/files, APIs/commands/configuration by name only, local development, and known technical limitations.
+  - `tester`: validation strategy, test evidence summary, quality risks, known defects, troubleshooting signals, and release-quality recommendation.
+  - `scrum_master`: delivery status, owners, handoffs, Definition of Done, release checklist, open decisions, and next actions.
+- The service manual must avoid secrets, credentials, private keys, `.env` contents, customer-sensitive data, production-only values, and invented facts.
+- Keep the workspace service manual as a draft until the user explicitly approves promoting durable content into tracked project documentation such as `docs/service-manual.md`.
+- When promoting content, preserve facts, assumptions, decisions, owners, validation evidence, and known limitations.
 
 ## Frontend design rules
 

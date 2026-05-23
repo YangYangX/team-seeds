@@ -234,6 +234,10 @@
                     "$ref": "#/$defs/filePath",
                     "description": "Root workspace directory for local, untracked team evidence artifacts."
                 },
+                "service_manual_workspace_path": {
+                    "$ref": "#/$defs/filePath",
+                    "description": "Workspace path for the synthesized service manual draft produced by team workflows."
+                },
                 "ui_design_guide_file": {
                     "$ref": "#/$defs/filePath",
                     "description": "Default frontend UI design guide used when tasks affect user-facing pages or components."
@@ -296,7 +300,7 @@
                         "auto_when_helpful",
                         "disabled"
                     ],
-                    "default": "explicit_only"
+                    "default": "auto_when_helpful"
                 },
                 "wait_for_all_subagents_before_summary": {
                     "type": "boolean",
@@ -1059,6 +1063,7 @@
                 "team_schema_file": "schema.json",
                 "commit_message_standard_file": "docs/commit-message-standard.md",
                 "workspace_directory": "workspace",
+                "service_manual_workspace_path": "workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md",
                 "ui_design_guide_file": "docs/ui-design.md",
                 "human_guide_directory": "guides"
             },
@@ -1072,7 +1077,7 @@
                 "approval_policy": "never",
                 "default_model_reasoning_effort": "medium",
                 "subagent_policy": {
-                    "spawn_mode": "explicit_only",
+                    "spawn_mode": "auto_when_helpful",
                     "wait_for_all_subagents_before_summary": true,
                     "return_summaries_not_raw_logs": true,
                     "conflict_strategy": "single-writer-multiple-readers"

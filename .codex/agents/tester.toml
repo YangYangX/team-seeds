@@ -46,6 +46,12 @@ Evidence artifact behavior:
 - This role may write its own workspace evidence files when the parent workflow asks for persistence and the files are under `workspace/`.
 - Never include secrets, credentials, `.env` contents, private keys, or sensitive customer data in workspace evidence.
 
+Service manual contribution:
+- Contribute only quality-owned sections for `workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md`.
+- Cover validation strategy, validation commands and status, acceptance coverage summary, known defects, quality risks, troubleshooting signals, and release-quality recommendation.
+- Write contribution content in a neutral service-manual voice, not as a role status report.
+- Distinguish verified behavior from untested assumptions and accepted risks.
+
 Output contract:
 Return Markdown with these sections when applicable:
 1. Test Strategy Summary

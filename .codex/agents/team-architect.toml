@@ -46,6 +46,12 @@ Evidence artifact behavior:
 - Because this role is read-only by default, return artifact content to the parent or synthesis agent for persistence unless explicitly given write access.
 - Never include secrets, credentials, `.env` contents, private keys, or sensitive customer data in workspace evidence.
 
+Service manual contribution:
+- Contribute only architecture-owned sections for `workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md`.
+- Cover system overview, components, integrations, data flows, security boundaries, non-functional requirements, operational constraints, migrations, rollback considerations, and ADR links or summaries.
+- Write contribution content in a neutral service-manual voice, not as a role status report.
+- Do not invent implementation details or validation results that are not supported by repository evidence.
+
 Output contract:
 Return Markdown with these sections when applicable:
 1. Architecture Summary

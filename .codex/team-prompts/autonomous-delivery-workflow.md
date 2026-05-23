@@ -44,7 +44,13 @@ Autonomy goal:
 - Batch open questions into the smallest possible number of decision checkpoints.
 - Stop only for the approval gates listed below, a true blocker, or when the requested delivery mode is complete.
 
-Explicitly create and use these subagents when their role is relevant:
+Session continuation behavior:
+- After this workflow is started in an interactive session, treat later user messages as requests to the same software team unless the user explicitly asks for direct-only assistance.
+- For each later message, the parent agent should route work to the smallest relevant set of subagents, wait for required results, and provide one unified final answer or implementation result.
+- Do not require the user to paste this workflow prompt again for normal follow-up needs, bug reports, new requirements, review requests, or release-support questions in the same session.
+- Answer trivial questions, direct shell-command requests, and narrow clarifications directly unless a role agent is clearly useful.
+
+Create and use these subagents when their role is relevant:
 1. product_owner: product value, scope, priority, release intent, and acceptance goals.
 2. business_analyst: requirements, business rules, user stories, edge cases, and acceptance criteria.
 3. team_architect: architecture impact, technical risks, non-functional requirements, and implementation guardrails.
@@ -73,33 +79,45 @@ Default execution loop:
    - Use scrum_master with the relevant agents to split work into small slices with one accountable owner per item.
    - Persist Definition of Done, handoff notes, blockers, and next actions under `06-delivery/`.
 
-5. Implementation loop
+5. Service manual draft
+   - Ask each relevant agent to contribute its role-owned service manual sections.
+   - Synthesize the contributions into `07-service-manual/service-manual.md`.
+   - Edit the draft into one fluent service manual with a single editorial voice, consistent terminology, and a service-centered structure rather than role-by-role notes.
+   - Keep the service manual factual and concise; label assumptions and open decisions.
+   - Do not promote the draft to tracked docs such as `docs/service-manual.md` unless the user explicitly approves.
+
+6. Implementation loop
    - If delivery mode is `plan-only`, stop after producing the plan, evidence, risks, and next actions.
    - If delivery mode is `implement`, `production-readiness`, or `release-support`, use software_developer to implement the next safe slice.
    - Keep changes focused and aligned with existing repository patterns.
    - If frontend/UI is affected, implement against `docs/ui-design.md` and prefer Tailwind CSS when available.
    - Do not introduce new production dependencies without explicit approval.
    - Persist implementation plan, changed files, key decisions, validation commands, and implementation summary under `04-implementation/`.
+   - Update the service manual draft when implementation changes service behavior, API shape, configuration names, known limitations, or operational notes.
 
-6. Validation loop
+7. Validation loop
    - Use tester to validate each implemented slice against acceptance criteria.
    - Run relevant available validation commands.
    - Persist test plan, validation results, bug reports, coverage gaps, and release-quality recommendation under `05-quality/`.
    - If blocking defects are found, send them back to software_developer for a focused fix, then validate again.
    - Continue this fix-and-validate loop until blocking defects are resolved, validation is blocked, or two focused fix attempts fail.
+   - Update the service manual draft with validation status, quality risks, known defects, and troubleshooting signals.
 
-7. Internal review
+8. Internal review
    - Use the relevant review roles to check product acceptance risk, requirements drift, architecture risk, code correctness, test gaps, and Definition of Done.
    - Persist review evidence in the appropriate workspace subdirectories.
+   - Review the service manual draft for factual accuracy, missing sections, stale assumptions, and unsafe content.
 
-8. Production readiness
+9. Production readiness
    - If delivery mode is `production-readiness` or `release-support`, prepare production-readiness evidence covering deployment, configuration, secrets by name only, database migration, observability, security, accessibility, performance, rollback, and post-release validation.
    - Persist production-readiness and deployment-runbook evidence under `06-delivery/`.
+   - Update the service manual draft with production-readiness status, deployment/runbook references, rollback notes, and post-release validation guidance.
    - Do not execute production deployment, destructive migrations, production data changes, or external side-effect operations unless the user explicitly requested and approved them.
 
-9. Final synthesis
+10. Final synthesis
    - Produce a concise final answer with product conclusion, requirements conclusion, architecture conclusion, implementation result or plan, validation result, production-readiness status when applicable, risks, blockers, next actions, and artifact index.
    - Include every workspace artifact path with owner and status.
+   - Include the service manual draft path, owner, status, and whether it is ready to promote to tracked docs.
 
 Approval gates:
 - Ask for approval before adding a new production dependency.
@@ -112,11 +130,21 @@ Approval gates:
 
 Workspace evidence rules:
 - Persist team evidence as Markdown under `workspace/YYYY-MM-DD-short-task-slug/` before the final answer.
-- Use this structure when applicable: `00-task.md`, `01-product/`, `02-requirements/`, `03-architecture/`, `04-implementation/`, `05-quality/`, and `06-delivery/`.
+- Use this structure when applicable: `00-task.md`, `01-product/`, `02-requirements/`, `03-architecture/`, `04-implementation/`, `05-quality/`, `06-delivery/`, and `07-service-manual/`.
 - Each evidence file must include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary.
 - Agents with write access may write only their own evidence files.
 - Read-only agents must return evidence to the parent or synthesis agent, which persists it without changing the role's decisions.
 - Do not store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
+
+Service manual rules:
+- Maintain `workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md` as a synthesized service manual draft.
+- Each agent contributes only its role-owned sections: product purpose and scope; requirements and workflows; architecture and operations; implementation notes; quality and troubleshooting; delivery status and next actions.
+- The parent or synthesis agent merges contributions into one coherent manual and removes duplication.
+- Role ownership governs source responsibility, not final document structure. Organize the manual around the service, its users, workflows, architecture, implementation, operation, validation, and release state.
+- The final draft must read like one document from one editor: use consistent terminology, heading style, tense, cross references, and level of detail.
+- Remove role-status chatter, raw handoff text, repeated assumptions, and contradictions. Any unresolved contradiction must become an explicit open decision with an owner.
+- Keep it factual, concise, and safe. Do not include secrets, credential values, private keys, `.env` contents, customer-sensitive data, or invented behavior.
+- Promote the draft to tracked project documentation such as `docs/service-manual.md` only with explicit user approval.
 
 Runtime documentation boundaries:
 - Use `docs/` for runtime-readable standards and project guidance.

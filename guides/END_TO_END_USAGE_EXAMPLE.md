@@ -2,7 +2,7 @@
 
 This guide is a full example of how to use the Codex software team seed from the first product idea to a production release.
 
-It is intentionally detailed. The default path is low-interaction: start with `.codex/team-prompts/autonomous-delivery-workflow.md` and let Codex run the stages. The later stage-by-stage prompts are a manual and vocabulary reference for when you want to intervene, debug, or run one role directly.
+It is intentionally detailed. The default interactive path is team router mode: start with `.codex/team-prompts/team-router-session.md` once, then talk to Codex as if you are giving requests or feedback to a software team. For a large end-to-end delivery request, use `.codex/team-prompts/autonomous-delivery-workflow.md` and let Codex run the stages. The later stage-by-stage prompts are a manual and vocabulary reference for when you want to intervene, debug, or run one role directly.
 
 ## Quick Mental Model
 
@@ -17,8 +17,8 @@ This seed gives Codex a small software team:
 
 Important behavior:
 
-- Codex does not automatically run a team workflow just because files exist.
-- You must explicitly ask Codex to use the project subagents, usually by running `.codex/team-prompts/autonomous-delivery-workflow.md`.
+- In team router mode, the parent agent routes non-trivial follow-up messages to the smallest relevant set of subagents automatically.
+- Simple questions, direct shell-command requests, and narrow clarifications can still be answered directly.
 - Workflow prompts under `.codex/team-prompts/` are reusable meeting agendas.
 - Agent definitions under `.codex/agents/` are role instructions.
 - `AGENTS.md` is the project-level operating agreement.
@@ -39,7 +39,7 @@ The goal is to move from this rough idea to a production-ready MVP.
 
 ## Default Low-Interaction Workflow
 
-For production work, do not feed Codex a long chain of small prompts. Start with one autonomous prompt that gives the team enough context to make safe progress, then let it continue until the selected delivery mode is complete, a quality gate fails, or an approval gate is reached.
+For production work, do not feed Codex a long chain of small prompts. Start with `team-router-session.md` once for the interactive session, then either describe follow-up work naturally or start one autonomous delivery prompt that gives the team enough context to make safe progress. Let it continue until the selected delivery mode is complete, a quality gate fails, or an approval gate is reached.
 
 The goal is not "no human judgment." The goal is "no human project-management babysitting." Humans still approve high-impact decisions, production side effects, compatibility changes, and unclear business tradeoffs.
 
@@ -58,6 +58,22 @@ Do not use it as a blind autopilot for:
 - Secret handling.
 - Legal, compliance, billing, or user-impacting policy decisions that have not been defined.
 - Large architecture rewrites without approval.
+
+### Session Startup Prompt
+
+At the start of an interactive session, run:
+
+```text
+Read `.codex/team-prompts/team-router-session.md` and execute it.
+```
+
+After that, you can type follow-up messages naturally:
+
+```text
+Users say the weekly CSV export has the wrong date range. Please investigate and fix it.
+```
+
+The parent agent should route the work to the relevant roles, wait for required outputs, perform the allowed implementation or validation work, and return one coherent result.
 
 ### Production-Ready Startup Prompt
 
@@ -201,6 +217,7 @@ workspace/2026-05-23-ops-checklist-mvp/
   06-delivery/dod-checklist.md
   06-delivery/handoff-summary.md
   06-delivery/next-actions.md
+  07-service-manual/service-manual.md
 ```
 
 For production-readiness or release-support mode, also expect:
@@ -247,6 +264,7 @@ Next actions:
 Artifact index:
 - `workspace/2026-05-23-ops-checklist-mvp/00-task.md`
 - `workspace/2026-05-23-ops-checklist-mvp/05-quality/validation-results.md`
+- `workspace/2026-05-23-ops-checklist-mvp/07-service-manual/service-manual.md`
 ```
 
 The rest of this guide explains what the autonomous workflow is doing internally. You only need the individual stage prompts when you want manual control over one part of the process.
@@ -305,6 +323,7 @@ Expected target layout:
       tester.toml
       scrum-master.toml
     team-prompts/
+      team-router-session.md
       autonomous-delivery-workflow.md
       software-team-workflow.md
       pr-review-workflow.md
@@ -355,6 +374,8 @@ workspace/2026-05-23-ops-checklist-mvp/
     handoff-summary.md
     production-readiness.md
     next-actions.md
+  07-service-manual/
+    service-manual.md
 ```
 
 Each evidence file should include:
@@ -370,6 +391,25 @@ Evidence summary: <brief summary>
 Do not store secrets, private keys, `.env` contents, tokens, customer-sensitive data, or production-only configuration values in `workspace/`.
 
 `workspace/` is intentionally ignored by git except for `workspace/.gitignore`.
+
+### Service Manual Draft
+
+For product, feature, implementation, production-readiness, or release-support workflows, the team maintains a synthesized service manual draft:
+
+```text
+workspace/YYYY-MM-DD-short-task-slug/07-service-manual/service-manual.md
+```
+
+Each agent contributes only its role-owned content:
+
+- `product_owner`: service purpose, users, scope, release intent, and product risks.
+- `business_analyst`: workflows, business rules, glossary, edge cases, and acceptance behavior.
+- `team_architect`: architecture, components, integrations, data flows, non-functional requirements, and operational constraints.
+- `software_developer`: implementation notes, modules/files, APIs, commands, configuration names only, local development, and technical limitations.
+- `tester`: validation strategy, evidence summary, known defects, quality risks, troubleshooting signals, and release recommendation.
+- `scrum_master`: delivery status, owners, handoffs, Definition of Done, release checklist, open decisions, and next actions.
+
+Role ownership controls source responsibility, not final document structure. The parent or synthesis agent edits these contributions into one fluent manual with a single editorial voice, consistent terminology, consistent heading style, and a service-centered reading order. Keep the workspace copy as a draft until you explicitly approve promotion into tracked docs such as `docs/service-manual.md`.
 
 ## Stage 1: Start From The Raw Idea
 
@@ -416,6 +456,7 @@ workspace/2026-05-23-ops-checklist-mvp/
   05-quality/test-plan.md
   06-delivery/dod-checklist.md
   06-delivery/next-actions.md
+  07-service-manual/service-manual.md
 ```
 
 Example final response shape:
@@ -821,7 +862,7 @@ Read `.codex/team-prompts/pr-review-workflow.md` and execute it.
 Review the current branch against `master`.
 
 Important:
-- Explicitly use the project subagents defined under `.codex/agents/`.
+- Use the project subagents defined under `.codex/agents/`.
 - Wait for all required subagent results.
 - Do not make code changes.
 - Produce the final consolidated review in the format required by the workflow.
@@ -1162,6 +1203,12 @@ Do not move files until I approve.
 
 ## Prompt Dictionary
 
+Start team router mode for an interactive session:
+
+```text
+Read `.codex/team-prompts/team-router-session.md` and execute it.
+```
+
 Full team discovery:
 
 ```text
@@ -1343,6 +1390,10 @@ Persist evidence under `workspace/YYYY-MM-DD-production-readiness-short-slug/`.
 
 - Captures owners and recommended next steps.
 
+`07-service-manual/service-manual.md`
+
+- Captures the synthesized service manual draft contributed by all relevant roles and merged by the parent or synthesis agent.
+
 ## Quality Gates
 
 Use these gates before moving forward.
@@ -1421,8 +1472,8 @@ Problem: Codex did not use subagents.
 Solution:
 
 ```text
-Explicitly use the project subagents defined under `.codex/agents/`.
-Wait for all required subagent results before producing the final answer.
+Enter team router mode by reading `.codex/team-prompts/team-router-session.md` and executing it.
+For this request, route work to the smallest relevant set of project subagents under `.codex/agents/`, wait for required results, and return one unified final answer.
 ```
 
 Problem: Workflow prompt was ignored.

@@ -1,7 +1,7 @@
 # PR Review Workflow Prompt
 
 ```text
-Review the current branch against `master`. Explicitly use the subagents below, wait for all results, and then synthesize a final review.
+Review the current branch against `master`. Use the relevant subagents below, wait for required results, and then synthesize a final review.
 
 Assign the review as follows:
 - team_architect: check architecture, coupling, public APIs, data flow, dependencies, and non-functional risks.
@@ -12,6 +12,8 @@ Assign the review as follows:
 - product_owner: assess product acceptance risk and release recommendation based on review evidence.
 
 If the branch affects frontend pages, UI components, visual design, or interaction states, review conformance with `docs/ui-design.md`, Tailwind CSS usage where applicable, responsive behavior, accessibility, and documented design deviations.
+
+If the branch creates or updates a service manual draft or tracked service documentation, review it for factual accuracy, role coverage, stale assumptions, unsafe content, missing known limitations, unified editorial flow, consistent terminology, and alignment with implementation and validation evidence.
 
 Use English for every subagent output and for the final consolidated review.
 

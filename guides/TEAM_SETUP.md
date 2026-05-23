@@ -67,6 +67,19 @@ For most work, paste `.codex/team-prompts/autonomous-delivery-workflow.md` and f
 
 For a full idea-to-production example, see `guides/END_TO_END_USAGE_EXAMPLE.md`.
 
+## Permission defaults
+
+This seed sets these Codex defaults in `.codex/config.toml`:
+
+```toml
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+```
+
+This prevents routine shell commands from blocking on repeated CLI approval prompts while keeping command execution inside the workspace sandbox. Team rules still require explicit user approval before destructive operations, production deployment, new production dependencies, public compatibility changes, production configuration changes, or secret handling.
+
+If you want Codex to ask before selected commands during an interactive session, change `approval_policy` to `on-request`.
+
 ## Workspace evidence
 
 Team workflows persist role evidence as Markdown under `workspace/YYYY-MM-DD-short-task-slug/`.

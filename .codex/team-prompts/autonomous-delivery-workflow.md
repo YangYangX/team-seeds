@@ -118,11 +118,18 @@ Workspace evidence rules:
 - Read-only agents must return evidence to the parent or synthesis agent, which persists it without changing the role's decisions.
 - Do not store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
 
+Runtime documentation boundaries:
+- Use `docs/` for runtime-readable standards and project guidance.
+- Do not use files under `guides/` as task requirements, product requirements, architecture guidance, implementation guidance, testing guidance, or design guidance.
+- Read or modify `guides/` only when the user explicitly asks for setup-guide, usage-guide, tutorial, or documentation work.
+- If `guides/` conflicts with `AGENTS.md`, `.codex/`, or `docs/`, follow `AGENTS.md`, `.codex/`, and `docs/`.
+
 Working rules:
 - Each subagent must stay within its own role boundary.
 - Wait for required subagent results before making cross-role conclusions.
 - Follow single-writer-multiple-readers: software_developer edits production code by default; tester may edit test files only when useful and safe.
 - Use English for all role outputs, artifacts, handoff notes, and the final team summary.
 - Prefer completing the requested delivery mode over asking for more prompts.
+- Do not treat `approval_policy = "never"` as permission for risky work; user approval gates still apply even when CLI command prompts are disabled.
 - When blocked, explain the blocker, evidence, attempted steps, and the smallest user decision needed to continue.
 ```

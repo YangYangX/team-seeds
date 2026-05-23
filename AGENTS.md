@@ -28,6 +28,19 @@ This repository uses a Codex subagent team with these project-scoped custom agen
 - Wait for required subagent outputs before producing the consolidated team answer.
 - Do not let each agent solve the entire task. Each role should stay within its responsibility boundary.
 
+## Codex permission defaults
+
+- This seed sets `approval_policy = "never"` and `sandbox_mode = "workspace-write"` in `.codex/config.toml` so routine read, write, build, lint, and test commands do not block on repeated CLI permission prompts.
+- The absence of CLI permission prompts is not approval for risky work. Agents must still ask the user before destructive filesystem/database/deployment/git operations, new production dependencies, public compatibility changes, production configuration changes, or secret handling.
+- If a command fails because it needs access outside the workspace or outside the sandbox, report the blocker and the smallest required user action instead of bypassing safety.
+
+## Runtime documentation boundaries
+
+- Treat `docs/` as runtime-readable team standards and project guidance.
+- Treat `guides/` as human-facing documentation for the repository owner. Do not use files under `guides/` as task requirements, product requirements, architecture guidance, implementation guidance, testing guidance, or design guidance.
+- Read or modify `guides/` only when the user explicitly asks for setup-guide, usage-guide, tutorial, or documentation work.
+- If runtime guidance and `guides/` conflict, follow runtime guidance from `AGENTS.md`, `.codex/`, and `docs/`.
+
 ## Workspace evidence rules
 
 - Use the root `workspace/` directory for team evidence artifacts created by agent workflows.

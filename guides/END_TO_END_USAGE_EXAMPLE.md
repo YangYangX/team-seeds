@@ -271,8 +271,15 @@ Directory intent:
 
 - `.codex/`: Codex configuration, custom agents, and workflow prompts.
 - `docs/`: Runtime-readable team standards and project guidance that agents should use during work, such as commit and UI design standards.
-- `guides/`: Human-facing setup and usage manuals.
+- `guides/`: Human-facing setup and usage manuals for the repository owner. Agents should not use these files as runtime requirements unless the user explicitly asks for guide/tutorial/documentation work.
 - `workspace/`: Local, untracked team evidence.
+
+Permission behavior:
+
+- `.codex/config.toml` sets `approval_policy = "never"` so routine shell commands do not block on repeated CLI permission prompts.
+- `.codex/config.toml` sets `sandbox_mode = "workspace-write"` so commands remain sandboxed to the workspace by default.
+- The autonomous workflow still stops for user approval before destructive operations, production deployment, new production dependencies, public compatibility changes, production configuration changes, or secret handling.
+- If you prefer interactive command approvals, change `approval_policy` to `on-request`.
 
 Expected target layout:
 

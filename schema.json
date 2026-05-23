@@ -240,7 +240,7 @@
                 },
                 "human_guide_directory": {
                     "$ref": "#/$defs/filePath",
-                    "description": "Directory for human-facing setup and usage guides that are not runtime requirements for agents."
+                    "description": "Directory for human-facing setup and usage guides. Agents must not use these files as runtime requirements unless explicitly asked to work on guides."
                 }
             },
             "additionalProperties": false
@@ -273,6 +273,9 @@
                 },
                 "default_sandbox_mode": {
                     "$ref": "#/$defs/sandboxMode"
+                },
+                "approval_policy": {
+                    "$ref": "#/$defs/approvalPolicy"
                 },
                 "default_model_reasoning_effort": {
                     "$ref": "#/$defs/modelReasoningEffort"
@@ -340,6 +343,16 @@
                 "danger-full-access"
             ],
             "description": "Sandbox mode for a Codex custom agent."
+        },
+        "approvalPolicy": {
+            "type": "string",
+            "enum": [
+                "untrusted",
+                "on-request",
+                "on-failure",
+                "never"
+            ],
+            "description": "Codex command approval policy."
         },
         "codexAgentTomlSpec": {
             "type": "object",
@@ -1055,7 +1068,8 @@
                     "max_depth": 1,
                     "job_max_runtime_seconds": 1800
                 },
-                "default_sandbox_mode": "read-only",
+                "default_sandbox_mode": "workspace-write",
+                "approval_policy": "never",
                 "default_model_reasoning_effort": "medium",
                 "subagent_policy": {
                     "spawn_mode": "explicit_only",

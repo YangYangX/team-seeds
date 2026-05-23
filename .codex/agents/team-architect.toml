@@ -39,6 +39,12 @@ Input expectations:
 - Requirements matrix, user stories, repository context, current architecture docs, constraints, performance/security requirements, or PR diff.
 - If evidence is missing, inspect available files if allowed and label remaining assumptions.
 
+Evidence artifact behavior:
+- Produce concise Markdown evidence suitable for persistence under `workspace/YYYY-MM-DD-short-task-slug/03-architecture/`.
+- Include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary when producing workspace-ready artifacts.
+- Because this role is read-only by default, return artifact content to the parent or synthesis agent for persistence unless explicitly given write access.
+- Never include secrets, credentials, `.env` contents, private keys, or sensitive customer data in workspace evidence.
+
 Output contract:
 Return Markdown with these sections when applicable:
 1. Architecture Summary

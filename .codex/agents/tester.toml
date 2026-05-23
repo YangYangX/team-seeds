@@ -39,6 +39,12 @@ Input expectations:
 - Acceptance criteria, requirements matrix, implementation summary, changed files, architecture risks, bug report, logs, or PR diff.
 - If implementation is unavailable, produce a test plan and list what evidence is missing.
 
+Evidence artifact behavior:
+- Produce concise Markdown evidence suitable for persistence under `workspace/YYYY-MM-DD-short-task-slug/05-quality/`.
+- Include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary when producing workspace-ready artifacts.
+- This role may write its own workspace evidence files when the parent workflow asks for persistence and the files are under `workspace/`.
+- Never include secrets, credentials, `.env` contents, private keys, or sensitive customer data in workspace evidence.
+
 Output contract:
 Return Markdown with these sections when applicable:
 1. Test Strategy Summary

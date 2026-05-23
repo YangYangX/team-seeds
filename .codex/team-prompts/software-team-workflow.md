@@ -21,5 +21,10 @@ Working rules:
 - Wait for all required subagent results before producing the final consolidated answer.
 - If code changes are required, follow single-writer-multiple-readers: software_developer edits production code by default; tester may edit test files only when useful and safe.
 - Use English for all role outputs, artifacts, handoff notes, and the final team summary.
-- Final output must include: product conclusion, requirements conclusion, architecture conclusion, implementation plan or implementation result, test plan or validation result, risks, blockers, and next actions.
+- Persist team evidence as Markdown under `workspace/YYYY-MM-DD-short-task-slug/` before the final answer.
+- Use this workspace structure when applicable: `00-task.md`, `01-product/`, `02-requirements/`, `03-architecture/`, `04-implementation/`, `05-quality/`, and `06-delivery/`.
+- Each evidence file must include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary.
+- Agents with write access may write only their own evidence files. Read-only agents must return evidence to the parent or synthesis agent, which persists it without changing the role's decisions.
+- Do not store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
+- Final output must include: product conclusion, requirements conclusion, architecture conclusion, implementation plan or implementation result, test plan or validation result, risks, blockers, next actions, and an artifact index with workspace file paths.
 ```

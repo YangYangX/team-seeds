@@ -13,14 +13,19 @@ Project-scoped custom agents:
 
 ## Install into a repository
 
-Copy the `.codex/` directory, `AGENTS.md`, and `commit-message-standard.md` into the root of your repository.
+Copy the `.codex/` directory, `AGENTS.md`, `commit-message-standard.md`, `.gitignore`, and `workspace/.gitignore` into the root of your repository.
+
+If the target repository already has a root `.gitignore`, merge the patterns from this package instead of replacing project-specific ignore rules.
 
 Recommended layout:
 
 ```text
 <repo>/
+  .gitignore
   AGENTS.md
   commit-message-standard.md
+  workspace/
+    .gitignore
   .codex/
     config.toml
     agents/
@@ -44,6 +49,12 @@ codex
 ```
 
 Then paste one of the workflow prompts from `.codex/team-prompts/`.
+
+## Workspace evidence
+
+Team workflows persist role evidence as Markdown under `workspace/YYYY-MM-DD-short-task-slug/`.
+
+The `workspace/` directory is intentionally untracked except for `workspace/.gitignore`. It is for local agent evidence, validation notes, handoffs, and release-readiness records. Promote durable decisions into tracked project docs only when they should become part of the repository.
 
 ## Language policy
 

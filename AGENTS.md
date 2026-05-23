@@ -28,6 +28,24 @@ This repository uses a Codex subagent team with these project-scoped custom agen
 - Wait for required subagent outputs before producing the consolidated team answer.
 - Do not let each agent solve the entire task. Each role should stay within its responsibility boundary.
 
+## Workspace evidence rules
+
+- Use the root `workspace/` directory for team evidence artifacts created by agent workflows.
+- `workspace/` is intentionally untracked except for `workspace/.gitignore`; do not rely on it as a permanent source repository artifact unless files are deliberately promoted into tracked docs.
+- For each team workflow, create a task folder named `workspace/YYYY-MM-DD-short-task-slug/`.
+- Persist agent evidence as Markdown files under role-oriented subdirectories when applicable:
+  - `00-task.md`
+  - `01-product/`
+  - `02-requirements/`
+  - `03-architecture/`
+  - `04-implementation/`
+  - `05-quality/`
+  - `06-delivery/`
+- Each evidence file must include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary.
+- Agents with write access may write only their own evidence files. Read-only agents must return evidence to the parent or synthesis agent, which persists it without changing the role's decisions.
+- Never store secrets, tokens, credentials, private keys, `.env` contents, customer-sensitive data, or production-only configuration values in `workspace/`.
+- The final consolidated team answer must include an artifact index with file paths, owners, and status.
+
 ## Definition of Done
 
 A work item is done only when:
@@ -108,4 +126,3 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
-

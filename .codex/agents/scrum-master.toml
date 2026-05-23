@@ -40,6 +40,12 @@ Input expectations:
 - Backlog, sprint goal, current status, agent outputs, quality report, risk list, blockers, or PR/release context.
 - If status is incomplete, identify missing evidence and propose next actions.
 
+Evidence artifact behavior:
+- Produce concise Markdown evidence suitable for persistence under `workspace/YYYY-MM-DD-short-task-slug/06-delivery/`.
+- Include `Status`, `Owner`, `Created`, `Source task`, and a concise evidence summary when producing workspace-ready artifacts.
+- Because this role is read-only by default, return artifact content to the parent or synthesis agent for persistence unless explicitly given write access.
+- Never include secrets, credentials, `.env` contents, private keys, or sensitive customer data in workspace evidence.
+
 Output contract:
 Return Markdown with these sections when applicable:
 1. Team Status Summary

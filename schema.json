@@ -1,0 +1,1432 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/schemas/codex-software-team-agents.schema.json",
+    "title": "Codex Software Team Agents Schema",
+    "description": "JSON Schema for describing a Codex software-development subagent team. It is intended as a source-of-truth schema for team-level JSON/YAML files that can generate Codex custom agent TOML files under .codex/agents/.",
+    "type": "object",
+    "required": [
+        "schema_version",
+        "kind",
+        "metadata",
+        "agents"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string",
+            "const": "codex-software-team-agents/v1",
+            "description": "Version of this team-agent schema."
+        },
+        "kind": {
+            "type": "string",
+            "const": "CodexSoftwareTeamAgents",
+            "description": "Document kind identifier."
+        },
+        "metadata": {
+            "$ref": "#/$defs/metadata"
+        },
+        "language_policy": {
+            "$ref": "#/$defs/languagePolicy"
+        },
+        "artifact_targets": {
+            "$ref": "#/$defs/artifactTargets"
+        },
+        "codex_config": {
+            "$ref": "#/$defs/codexConfig"
+        },
+        "team_rules": {
+            "$ref": "#/$defs/teamRules"
+        },
+        "standards": {
+            "$ref": "#/$defs/standards"
+        },
+        "agents": {
+            "type": "object",
+            "description": "Map of agent role IDs to agent definitions. The six standard roles are required, but additional roles are allowed.",
+            "required": [
+                "product_owner",
+                "business_analyst",
+                "team_architect",
+                "software_developer",
+                "tester",
+                "scrum_master"
+            ],
+            "properties": {
+                "product_owner": {
+                    "$ref": "#/$defs/agentDefinition"
+                },
+                "business_analyst": {
+                    "$ref": "#/$defs/agentDefinition"
+                },
+                "team_architect": {
+                    "$ref": "#/$defs/agentDefinition"
+                },
+                "software_developer": {
+                    "$ref": "#/$defs/agentDefinition"
+                },
+                "tester": {
+                    "$ref": "#/$defs/agentDefinition"
+                },
+                "scrum_master": {
+                    "$ref": "#/$defs/agentDefinition"
+                }
+            },
+            "additionalProperties": {
+                "$ref": "#/$defs/agentDefinition"
+            }
+        },
+        "raci_matrix": {
+            "$ref": "#/$defs/raciMatrix"
+        },
+        "workflow_definitions": {
+            "$ref": "#/$defs/workflowDefinitions"
+        },
+        "quality_gates": {
+            "$ref": "#/$defs/qualityGates"
+        },
+        "handoff_protocol": {
+            "$ref": "#/$defs/handoffProtocol"
+        },
+        "security_and_compliance": {
+            "$ref": "#/$defs/securityAndCompliance"
+        },
+        "extensions": {
+            "$ref": "#/$defs/extensions"
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "nonEmptyString": {
+            "type": "string",
+            "minLength": 1
+        },
+        "markdownString": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Markdown-compatible text."
+        },
+        "identifier": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Lowercase snake_case identifier."
+        },
+        "filePath": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Relative or absolute file path."
+        },
+        "stringList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/nonEmptyString"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "standardRoleId": {
+            "type": "string",
+            "enum": [
+                "product_owner",
+                "business_analyst",
+                "team_architect",
+                "software_developer",
+                "tester",
+                "scrum_master"
+            ]
+        },
+        "roleId": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/standardRoleId"
+                },
+                {
+                    "$ref": "#/$defs/identifier"
+                }
+            ]
+        },
+        "metadata": {
+            "type": "object",
+            "required": [
+                "team_id",
+                "team_name",
+                "description",
+                "version"
+            ],
+            "properties": {
+                "team_id": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "team_name": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "description": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "version": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "owner": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "timezone": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "tags": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "languagePolicy": {
+            "type": "object",
+            "required": [
+                "default_language",
+                "override_allowed"
+            ],
+            "properties": {
+                "default_language": {
+                    "type": "string",
+                    "default": "en",
+                    "description": "Default language for agent outputs, prompts, summaries, and handoffs."
+                },
+                "override_allowed": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the parent task can override the default language."
+                },
+                "rule": {
+                    "type": "string",
+                    "default": "Respond in English unless the parent task explicitly requests another language."
+                }
+            },
+            "additionalProperties": false
+        },
+        "artifactTargets": {
+            "type": "object",
+            "description": "Files or directories generated from this team definition.",
+            "properties": {
+                "codex_config_file": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "project_agent_directory": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "project_guidance_file": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "workflow_prompt_directory": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "team_schema_file": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "commit_message_standard_file": {
+                    "$ref": "#/$defs/filePath"
+                }
+            },
+            "additionalProperties": false
+        },
+        "codexConfig": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "object",
+                    "properties": {
+                        "max_threads": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 32,
+                            "default": 6
+                        },
+                        "max_depth": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 5,
+                            "default": 1
+                        },
+                        "job_max_runtime_seconds": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "default": 1800
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "default_sandbox_mode": {
+                    "$ref": "#/$defs/sandboxMode"
+                },
+                "default_model_reasoning_effort": {
+                    "$ref": "#/$defs/modelReasoningEffort"
+                },
+                "subagent_policy": {
+                    "$ref": "#/$defs/subagentPolicy"
+                }
+            },
+            "additionalProperties": false
+        },
+        "subagentPolicy": {
+            "type": "object",
+            "properties": {
+                "spawn_mode": {
+                    "type": "string",
+                    "enum": [
+                        "explicit_only",
+                        "auto_when_helpful",
+                        "disabled"
+                    ],
+                    "default": "explicit_only"
+                },
+                "wait_for_all_subagents_before_summary": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "return_summaries_not_raw_logs": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "conflict_strategy": {
+                    "type": "string",
+                    "enum": [
+                        "single-writer-multiple-readers",
+                        "lock-files-before-edit",
+                        "review-only",
+                        "manual"
+                    ],
+                    "default": "single-writer-multiple-readers"
+                },
+                "prefer_subagents_for": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "avoid_or_limit_subagents_for": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "modelReasoningEffort": {
+            "type": "string",
+            "enum": [
+                "minimal",
+                "low",
+                "medium",
+                "high"
+            ],
+            "description": "Reasoning effort hint for a Codex custom agent."
+        },
+        "sandboxMode": {
+            "type": "string",
+            "enum": [
+                "read-only",
+                "workspace-write",
+                "danger-full-access"
+            ],
+            "description": "Sandbox mode for a Codex custom agent."
+        },
+        "codexAgentTomlSpec": {
+            "type": "object",
+            "description": "Fields needed to generate one .codex/agents/*.toml custom agent file.",
+            "required": [
+                "name",
+                "description",
+                "toml_file",
+                "developer_instructions"
+            ],
+            "properties": {
+                "name": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "description": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "toml_file": {
+                    "$ref": "#/$defs/filePath"
+                },
+                "developer_instructions": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Instruction text that will be written to the TOML developer_instructions field."
+                },
+                "model": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Optional explicit model name. Omit or set to inherit if the agent should use the parent session model."
+                },
+                "model_reasoning_effort": {
+                    "$ref": "#/$defs/modelReasoningEffort"
+                },
+                "sandbox_mode": {
+                    "$ref": "#/$defs/sandboxMode"
+                },
+                "nickname_candidates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/nonEmptyString"
+                    },
+                    "uniqueItems": true
+                },
+                "mcp_servers": {
+                    "type": "array",
+                    "description": "Optional MCP server names this custom agent may use.",
+                    "items": {
+                        "$ref": "#/$defs/nonEmptyString"
+                    },
+                    "uniqueItems": true
+                },
+                "skills": {
+                    "type": "object",
+                    "description": "Optional skill configuration for the custom agent.",
+                    "properties": {
+                        "config": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "agentDefinition": {
+            "type": "object",
+            "required": [
+                "codex_agent",
+                "mission",
+                "responsibilities",
+                "non_goals",
+                "input_contract",
+                "output_contract",
+                "tools_policy",
+                "handoff",
+                "decision_authority"
+            ],
+            "properties": {
+                "role_id": {
+                    "$ref": "#/$defs/roleId"
+                },
+                "display_name": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "codex_agent": {
+                    "$ref": "#/$defs/codexAgentTomlSpec"
+                },
+                "mission": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "responsibilities": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "non_goals": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "input_contract": {
+                    "$ref": "#/$defs/ioContract"
+                },
+                "output_contract": {
+                    "$ref": "#/$defs/outputContract"
+                },
+                "tools_policy": {
+                    "$ref": "#/$defs/toolsPolicy"
+                },
+                "handoff": {
+                    "$ref": "#/$defs/handoff"
+                },
+                "decision_authority": {
+                    "$ref": "#/$defs/decisionAuthority"
+                },
+                "quality_bar": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "default_output_sections": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ioContract": {
+            "type": "object",
+            "description": "Inputs expected by an agent.",
+            "properties": {
+                "required": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "optional": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "examples": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/nonEmptyString"
+                    },
+                    "uniqueItems": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "outputContract": {
+            "type": "object",
+            "required": [
+                "default_format",
+                "required_outputs"
+            ],
+            "properties": {
+                "default_format": {
+                    "type": "string",
+                    "enum": [
+                        "markdown",
+                        "json",
+                        "yaml",
+                        "toml",
+                        "plain_text"
+                    ],
+                    "default": "markdown"
+                },
+                "required_outputs": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "required_sections": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "quality_bar": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "handoff_fields": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "toolsPolicy": {
+            "type": "object",
+            "description": "Role-specific tool, filesystem, shell, and safety policy.",
+            "properties": {
+                "filesystem": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "read",
+                        "read-write",
+                        "read-write-tests-only"
+                    ]
+                },
+                "shell": {
+                    "type": "string",
+                    "enum": [
+                        "avoid",
+                        "read-only commands allowed",
+                        "allowed-for-build-test-lint",
+                        "allowed-for-test-commands",
+                        "allowed-with-approval"
+                    ]
+                },
+                "git": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "database": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "issue_tracker": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "docs": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "package_manager": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "browser": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "test_data": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "mcp_servers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/nonEmptyString"
+                    },
+                    "uniqueItems": true
+                },
+                "dangerous_actions_require_approval": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "handoff": {
+            "type": "object",
+            "properties": {
+                "sends_to": {
+                    "$ref": "#/$defs/handoffMap"
+                },
+                "receives_from": {
+                    "$ref": "#/$defs/handoffMap"
+                }
+            },
+            "additionalProperties": false
+        },
+        "handoffMap": {
+            "type": "object",
+            "propertyNames": {
+                "$ref": "#/$defs/identifier"
+            },
+            "additionalProperties": {
+                "$ref": "#/$defs/handoffItem"
+            }
+        },
+        "handoffItem": {
+            "type": "object",
+            "required": [
+                "artifact",
+                "purpose"
+            ],
+            "properties": {
+                "artifact": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "purpose": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "required_fields": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "notes": {
+                    "$ref": "#/$defs/nonEmptyString"
+                }
+            },
+            "additionalProperties": false
+        },
+        "decisionAuthority": {
+            "type": "object",
+            "required": [
+                "owns"
+            ],
+            "properties": {
+                "owns": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "consulted_for": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "escalates_to": {
+                    "type": "object",
+                    "propertyNames": {
+                        "$ref": "#/$defs/identifier"
+                    },
+                    "additionalProperties": {
+                        "$ref": "#/$defs/nonEmptyString"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "teamRules": {
+            "type": "object",
+            "properties": {
+                "communication": {
+                    "$ref": "#/$defs/communicationRules"
+                },
+                "collaboration": {
+                    "$ref": "#/$defs/collaborationRules"
+                },
+                "definition_of_done": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "anti_patterns": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "communicationRules": {
+            "type": "object",
+            "properties": {
+                "default_output_language": {
+                    "type": "string",
+                    "default": "English"
+                },
+                "tone": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "always_state_assumptions": {
+                    "type": "boolean"
+                },
+                "separate_facts_from_recommendations": {
+                    "type": "boolean"
+                },
+                "use_file_references_when_discussing_code": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
+        },
+        "collaborationRules": {
+            "type": "object",
+            "properties": {
+                "implementation_conflict_strategy": {
+                    "type": "string",
+                    "enum": [
+                        "single-writer-multiple-readers",
+                        "manual",
+                        "review-only"
+                    ]
+                },
+                "default_writer_for_production_code": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "test_file_writer": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "read_only_roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/identifier"
+                    },
+                    "uniqueItems": true
+                },
+                "wait_for_required_agent_outputs": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
+        },
+        "standards": {
+            "type": "object",
+            "properties": {
+                "commit_message": {
+                    "type": "object",
+                    "properties": {
+                        "standard": {
+                            "type": "string",
+                            "enum": [
+                                "conventional-commits-1.0.0"
+                            ]
+                        },
+                        "file": {
+                            "$ref": "#/$defs/filePath"
+                        },
+                        "enforced_by_agents": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/$defs/identifier"
+                            },
+                            "uniqueItems": true
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "raciMatrix": {
+            "type": "object",
+            "propertyNames": {
+                "$ref": "#/$defs/identifier"
+            },
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "responsible",
+                    "accountable"
+                ],
+                "properties": {
+                    "responsible": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/identifier"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "accountable": {
+                        "$ref": "#/$defs/identifier"
+                    },
+                    "consulted": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/identifier"
+                        },
+                        "uniqueItems": true
+                    },
+                    "informed": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/identifier"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "workflowDefinitions": {
+            "type": "object",
+            "propertyNames": {
+                "$ref": "#/$defs/identifier"
+            },
+            "additionalProperties": {
+                "$ref": "#/$defs/workflowDefinition"
+            }
+        },
+        "workflowDefinition": {
+            "type": "object",
+            "required": [
+                "objective",
+                "orchestration"
+            ],
+            "properties": {
+                "objective": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "trigger_examples": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "orchestration": {
+                    "$ref": "#/$defs/orchestration"
+                },
+                "quality_gate": {
+                    "$ref": "#/$defs/qualityGate"
+                },
+                "output": {
+                    "$ref": "#/$defs/outputContract"
+                }
+            },
+            "additionalProperties": false
+        },
+        "orchestration": {
+            "type": "object",
+            "required": [
+                "mode",
+                "steps"
+            ],
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "parallel-then-synthesize",
+                        "sequential-with-review",
+                        "single-writer-with-reviewers",
+                        "parallel-review",
+                        "manual"
+                    ]
+                },
+                "main_owner": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "synthesis_owner": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "final_decision_owner": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "rules": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/workflowStep"
+                    },
+                    "minItems": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "workflowStep": {
+            "type": "object",
+            "required": [
+                "step_id",
+                "agent",
+                "output"
+            ],
+            "properties": {
+                "step_id": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "agent": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "task_type": {
+                    "type": "string",
+                    "enum": [
+                        "analysis",
+                        "exploration",
+                        "coordination",
+                        "implementation",
+                        "validation",
+                        "review",
+                        "synthesis"
+                    ]
+                },
+                "focus": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "depends_on": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/identifier"
+                    },
+                    "uniqueItems": true
+                },
+                "condition": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "output": {
+                    "$ref": "#/$defs/nonEmptyString"
+                }
+            },
+            "additionalProperties": false
+        },
+        "qualityGates": {
+            "type": "object",
+            "propertyNames": {
+                "$ref": "#/$defs/identifier"
+            },
+            "additionalProperties": {
+                "$ref": "#/$defs/qualityGate"
+            }
+        },
+        "qualityGate": {
+            "type": "object",
+            "required": [
+                "name",
+                "criteria"
+            ],
+            "properties": {
+                "name": {
+                    "$ref": "#/$defs/nonEmptyString"
+                },
+                "owner": {
+                    "$ref": "#/$defs/identifier"
+                },
+                "reviewers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/identifier"
+                    },
+                    "uniqueItems": true
+                },
+                "required": {
+                    "$ref": "#/$defs/stringList"
+                },
+                "criteria": {
+                    "$ref": "#/$defs/stringList"
+                }
+            },
+            "additionalProperties": false
+        },
+        "handoffProtocol": {
+            "type": "object",
+            "properties": {
+                "standard_handoff_message": {
+                    "type": "object",
+                    "properties": {
+                        "required_fields": {
+                            "$ref": "#/$defs/stringList"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "artifact_versioning": {
+                    "type": "object",
+                    "properties": {
+                        "use_version_ids": {
+                            "type": "boolean"
+                        },
+                        "version_format": {
+                            "$ref": "#/$defs/nonEmptyString"
+                        },
+                        "include_source_links": {
+                            "type": "boolean"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "escalation": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "first_owner": {
+                                "$ref": "#/$defs/identifier"
+                            },
+                            "final_owner": {
+                                "$ref": "#/$defs/identifier"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "securityAndCompliance": {
+            "type": "object",
+            "properties": {
+                "secrets_policy": {
+                    "type": "object",
+                    "properties": {
+                        "never_print_secret_values": {
+                            "type": "boolean"
+                        },
+                        "never_modify_secret_files_without_approval": {
+                            "type": "boolean"
+                        },
+                        "secret_file_patterns": {
+                            "$ref": "#/$defs/stringList"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "dependency_policy": {
+                    "type": "object",
+                    "properties": {
+                        "new_production_dependency_requires": {
+                            "$ref": "#/$defs/stringList"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "extensions": {
+            "type": "object",
+            "description": "Free-form extension area for project-specific fields.",
+            "additionalProperties": true
+        }
+    },
+    "examples": [
+        {
+            "schema_version": "codex-software-team-agents/v1",
+            "kind": "CodexSoftwareTeamAgents",
+            "metadata": {
+                "team_id": "software_team",
+                "team_name": "Codex Software Team",
+                "description": "A six-role software development subagent team.",
+                "version": "1.0.0",
+                "timezone": "Europe/Stockholm",
+                "tags": [
+                    "codex",
+                    "subagents",
+                    "software-development"
+                ]
+            },
+            "language_policy": {
+                "default_language": "en",
+                "override_allowed": true,
+                "rule": "Respond in English unless the parent task explicitly requests another language."
+            },
+            "artifact_targets": {
+                "codex_config_file": ".codex/config.toml",
+                "project_agent_directory": ".codex/agents",
+                "project_guidance_file": "AGENTS.md",
+                "workflow_prompt_directory": ".codex/team-prompts",
+                "team_schema_file": "schema.json",
+                "commit_message_standard_file": "commit-message-standard.md"
+            },
+            "codex_config": {
+                "agents": {
+                    "max_threads": 6,
+                    "max_depth": 1,
+                    "job_max_runtime_seconds": 1800
+                },
+                "default_sandbox_mode": "read-only",
+                "default_model_reasoning_effort": "medium",
+                "subagent_policy": {
+                    "spawn_mode": "explicit_only",
+                    "wait_for_all_subagents_before_summary": true,
+                    "return_summaries_not_raw_logs": true,
+                    "conflict_strategy": "single-writer-multiple-readers"
+                }
+            },
+            "agents": {
+                "product_owner": {
+                    "role_id": "product_owner",
+                    "display_name": "Product Owner",
+                    "codex_agent": {
+                        "name": "product_owner",
+                        "description": "Owns product intent, value, prioritization, scope, release intent, and acceptance decisions.",
+                        "toml_file": ".codex/agents/product-owner.toml",
+                        "model_reasoning_effort": "high",
+                        "sandbox_mode": "read-only",
+                        "nickname_candidates": [
+                            "PO",
+                            "Value Owner",
+                            "Scope Owner"
+                        ],
+                        "developer_instructions": "You are the Product Owner subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Maximize product value by translating stakeholder intent into prioritized, testable outcomes.",
+                    "responsibilities": [
+                        "Define product goals",
+                        "Prioritize backlog items",
+                        "Approve product-level acceptance intent"
+                    ],
+                    "non_goals": [
+                        "Do not implement code",
+                        "Do not make low-level technical design decisions"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "problem_statement"
+                        ],
+                        "optional": [
+                            "stakeholder_goals"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "product_brief",
+                            "prioritized_backlog"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read",
+                        "shell": "avoid"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "business_analyst": {
+                                "artifact": "product_brief",
+                                "purpose": "Turn product intent into detailed requirements."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "product scope",
+                            "priority"
+                        ]
+                    }
+                },
+                "business_analyst": {
+                    "role_id": "business_analyst",
+                    "display_name": "Business Analyst",
+                    "codex_agent": {
+                        "name": "business_analyst",
+                        "description": "Analyzes business processes, requirements, rules, edge cases, user stories, and acceptance criteria.",
+                        "toml_file": ".codex/agents/business-analyst.toml",
+                        "model_reasoning_effort": "high",
+                        "sandbox_mode": "read-only",
+                        "nickname_candidates": [
+                            "BA",
+                            "Requirements Analyst"
+                        ],
+                        "developer_instructions": "You are the Business Analyst subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Convert product intent into precise, testable requirements.",
+                    "responsibilities": [
+                        "Define requirements",
+                        "Identify business rules",
+                        "Write acceptance criteria"
+                    ],
+                    "non_goals": [
+                        "Do not choose implementation technology",
+                        "Do not modify code"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "product_brief"
+                        ],
+                        "optional": [
+                            "existing_docs"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "user_stories",
+                            "requirements_matrix"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read",
+                        "shell": "avoid"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "tester": {
+                                "artifact": "acceptance_criteria",
+                                "purpose": "Create test plan."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "requirements clarity",
+                            "business rules"
+                        ]
+                    }
+                },
+                "team_architect": {
+                    "role_id": "team_architect",
+                    "display_name": "Team Architect",
+                    "codex_agent": {
+                        "name": "team_architect",
+                        "description": "Owns architecture, system design, technical tradeoffs, non-functional requirements, risk, and ADRs.",
+                        "toml_file": ".codex/agents/team-architect.toml",
+                        "model_reasoning_effort": "high",
+                        "sandbox_mode": "read-only",
+                        "nickname_candidates": [
+                            "Architect",
+                            "Tech Lead"
+                        ],
+                        "developer_instructions": "You are the Team Architect subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Ensure the solution is coherent, maintainable, secure, and aligned with system constraints.",
+                    "responsibilities": [
+                        "Assess architecture",
+                        "Define guardrails",
+                        "Document tradeoffs"
+                    ],
+                    "non_goals": [
+                        "Do not over-engineer beyond product scope",
+                        "Do not modify code by default"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "requirements_matrix"
+                        ],
+                        "optional": [
+                            "repo_context"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "architecture_assessment",
+                            "implementation_guardrails"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read",
+                        "shell": "read-only commands allowed"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "software_developer": {
+                                "artifact": "implementation_guardrails",
+                                "purpose": "Constrain implementation."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "architecture direction",
+                            "technical constraints"
+                        ]
+                    }
+                },
+                "software_developer": {
+                    "role_id": "software_developer",
+                    "display_name": "Software Developer",
+                    "codex_agent": {
+                        "name": "software_developer",
+                        "description": "Implements focused code changes, refactors, bug fixes, and automated tests.",
+                        "toml_file": ".codex/agents/software-developer.toml",
+                        "model_reasoning_effort": "medium",
+                        "sandbox_mode": "workspace-write",
+                        "nickname_candidates": [
+                            "Developer",
+                            "Implementer",
+                            "Builder"
+                        ],
+                        "developer_instructions": "You are the Software Developer subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Deliver the smallest correct, maintainable implementation that satisfies accepted requirements.",
+                    "responsibilities": [
+                        "Implement focused changes",
+                        "Add or update tests",
+                        "Report validation results"
+                    ],
+                    "non_goals": [
+                        "Do not change product scope",
+                        "Do not introduce dependencies without approval"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "acceptance_criteria",
+                            "architecture_guardrails"
+                        ],
+                        "optional": [
+                            "test_plan"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "changed_files",
+                            "implementation_summary",
+                            "validation_results"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read-write",
+                        "shell": "allowed-for-build-test-lint",
+                        "git": "no-force-push"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "tester": {
+                                "artifact": "implementation_summary",
+                                "purpose": "Verify behavior and quality."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "implementation details within guardrails",
+                            "test implementation approach"
+                        ]
+                    }
+                },
+                "tester": {
+                    "role_id": "tester",
+                    "display_name": "Tester",
+                    "codex_agent": {
+                        "name": "tester",
+                        "description": "Owns test strategy, validation, regression risk, bug reports, coverage gaps, and release quality evidence.",
+                        "toml_file": ".codex/agents/tester.toml",
+                        "model_reasoning_effort": "high",
+                        "sandbox_mode": "workspace-write",
+                        "nickname_candidates": [
+                            "QA",
+                            "Tester",
+                            "Quality Analyst"
+                        ],
+                        "developer_instructions": "You are the Tester subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Prove whether delivered behavior satisfies acceptance criteria and identify quality risks before release.",
+                    "responsibilities": [
+                        "Create test plans",
+                        "Run validation",
+                        "Report bugs and coverage gaps"
+                    ],
+                    "non_goals": [
+                        "Do not change product acceptance criteria",
+                        "Do not fix production code unless delegated"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "acceptance_criteria",
+                            "implementation_summary"
+                        ],
+                        "optional": [
+                            "architecture_risks"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "test_plan",
+                            "validation_report",
+                            "release_quality_recommendation"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read-write-tests-only",
+                        "shell": "allowed-for-test-commands"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "software_developer": {
+                                "artifact": "bug_reports",
+                                "purpose": "Fix defects."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "test strategy",
+                            "quality evidence"
+                        ]
+                    }
+                },
+                "scrum_master": {
+                    "role_id": "scrum_master",
+                    "display_name": "Scrum Master",
+                    "codex_agent": {
+                        "name": "scrum_master",
+                        "description": "Facilitates Scrum process, sprint planning, impediment tracking, handoffs, team coordination, and retrospectives.",
+                        "toml_file": ".codex/agents/scrum-master.toml",
+                        "model_reasoning_effort": "medium",
+                        "sandbox_mode": "read-only",
+                        "nickname_candidates": [
+                            "Scrum Master",
+                            "Facilitator",
+                            "Flow Manager"
+                        ],
+                        "developer_instructions": "You are the Scrum Master subagent. Respond in English unless the parent task explicitly requests another language."
+                    },
+                    "mission": "Keep the team process clear, focused, sustainable, transparent, and oriented toward validated delivery.",
+                    "responsibilities": [
+                        "Coordinate handoffs",
+                        "Track impediments",
+                        "Summarize team status"
+                    ],
+                    "non_goals": [
+                        "Do not decide product priority",
+                        "Do not implement code"
+                    ],
+                    "input_contract": {
+                        "required": [
+                            "backlog",
+                            "current_status"
+                        ],
+                        "optional": [
+                            "quality_status"
+                        ]
+                    },
+                    "output_contract": {
+                        "default_format": "markdown",
+                        "required_outputs": [
+                            "sprint_plan",
+                            "impediment_log",
+                            "status_summary"
+                        ]
+                    },
+                    "tools_policy": {
+                        "filesystem": "read",
+                        "shell": "avoid"
+                    },
+                    "handoff": {
+                        "sends_to": {
+                            "product_owner": {
+                                "artifact": "scope_pressure_report",
+                                "purpose": "Resolve scope and priority."
+                            }
+                        }
+                    },
+                    "decision_authority": {
+                        "owns": [
+                            "process",
+                            "handoff coordination"
+                        ]
+                    }
+                }
+            },
+            "standards": {
+                "commit_message": {
+                    "standard": "conventional-commits-1.0.0",
+                    "file": "commit-message-standard.md",
+                    "enforced_by_agents": [
+                        "software_developer",
+                        "tester",
+                        "scrum_master"
+                    ]
+                }
+            }
+        }
+    ]
+}
